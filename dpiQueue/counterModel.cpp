@@ -13,8 +13,15 @@
 
 using namespace std;
 
+typedef struct {
+    int data;
+    int info;
+}  ModelData;
+
 // Vector of queues to store example results to be compared to the design
 vector<deque<int> > blockTapPoint;
+
+extern "C" void sendDataFromUnit(int id, int data);
 
 // Model to generate the data
 extern "C" void startModel()
@@ -24,7 +31,18 @@ extern "C" void startModel()
   
   for (int blk = 0; blk < 2; ++blk)
   	for (int i = 0; i < 4; ++i)
+    {
     	blockTapPoint[blk].push_back(i*(blk+1));
+        sendDataFromUnit(blk, i*(blk+1));
+    }
+}
+
+extern "C" void structTest(ModelData* data)
+{
+  printf("[C Model] Struct data before: %d, info: %d\n", data->data, data->info);
+  data->data = 5;
+  data->info = 4;
+  printf("[C Model] Struct data after: %d, info: %d\n", data->data, data->info);
 }
 
 // Interface to get the data from the model queues
